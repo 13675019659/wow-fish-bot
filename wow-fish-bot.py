@@ -66,7 +66,9 @@ if __name__ == "__main__":
                        duration=5)    
     while flag_exit is False:
         if is_stop == False:
-            if GetWindowText(GetForegroundWindow()) != "World of Warcraft":
+            print("==="+GetWindowText(GetForegroundWindow()))
+            print("==="+GetWindowText(GetForegroundWindow()) != "魔兽世界")
+            if GetWindowText(GetForegroundWindow()) != "魔兽世界":
                 if wait_mes == 5:
                     wait_mes = 0
                     toaster.show_toast(app,
@@ -74,21 +76,22 @@ if __name__ == "__main__":
                                        + " as active window",
                                        icon_path='wow-fish-bot.ico',
                                        duration=5)                  
-                # print("Waiting for World of Warcraft as active window")
+                print("Waiting for World of Warcraft as active window")
                 systray.update(
                     hover_text=app
                     + " - Waiting for World of Warcraft as active window")
                 wait_mes += 1
                 time.sleep(2)
             else:
+                print("Has entered worldofwarcraft to start monitoring")
                 systray.update(hover_text=app)
                 rect = GetWindowRect(GetForegroundWindow())
                 
                 if is_block == False:
+                    print("Simulate key 1 = = = = start fishing!")
                     lastx = 0
                     lasty = 0
                     pyautogui.press('1')
-                    # print("Fish on !")
                     new_cast_time = time.time()
                     is_block = True
                     time.sleep(2)
@@ -119,6 +122,7 @@ if __name__ == "__main__":
                         b_y = int(dM01 / dArea)
                     if lastx > 0 and lasty > 0:
                         if lastx != b_x and lasty != b_y:
+                            print("Floating power starts to finish!")
                             is_block = False
                             if b_x < 1: b_x = lastx
                             if b_y < 1: b_y = lasty
@@ -127,21 +131,21 @@ if __name__ == "__main__":
                             pyautogui.mouseDown(button='right')
                             pyautogui.mouseUp(button='right')
                             pyautogui.keyUp('shiftleft')
-                            # print("Catch !")
+                            print("Catch !")
                             time.sleep(5)
                     lastx = b_x
                     lasty = b_y
                     
                     # show windows with mask
-                    # cv2.imshow("fish_mask", mask)
-                    # cv2.imshow("fish_frame", frame)
+                    cv2.imshow("fish_mask", mask)
+                    cv2.imshow("fish_frame", frame)
     
                     if time.time() - new_cast_time > recast_time:
-                        # print("New cast if something wrong")
+                        print("New cast if something wrong")
                         is_block = False               
             if cv2.waitKey(1) == 27:
                 break
         else:
-            # print("Pause")
+            print("Pause")
             systray.update(hover_text=app + " - On Pause")   
             time.sleep(2)
