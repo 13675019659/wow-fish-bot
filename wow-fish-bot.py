@@ -8,12 +8,15 @@ import time
 import pyautogui
 import numpy as np
 import cv2
+import random
 #
 from win10toast import ToastNotifier
 from PIL import ImageGrab
 from win32gui import GetWindowText, GetForegroundWindow, GetWindowRect
 from threading import Thread
 from infi.systray import SysTrayIcon
+
+dev = False
 
 
 def resource_path(relative_path):
@@ -41,6 +44,38 @@ def app_destroy(systray):
 def app_about(systray):
     # print("github.com/YECHEZ/wow-fish-bot")
     webbrowser.open('https://github.com/YECHEZ/wow-fish-bot')
+
+
+def find_float(img_name):
+    print('Looking for float')
+
+    # todo: maybe make some universal float without background?
+    for x in range(0, 13):
+        template = cv2.imread('var/fishing_float_' + str(x) + '.png', 0)
+
+        img_rgb = cv2.imread(img_name)
+        img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
+        # print('got images')
+        w, h = template.shape[::-1]
+        res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
+        threshold = 0.6
+        loc = np.where(res >= threshold)
+        for pt in zip(*loc[::-1]):
+            cv2.rectangle(img_rgb, pt, (pt[0] + w, pt[1] + h), (0, 0, 255), 2)
+        if loc[0].any():
+            print('Found ' + str(x) + ' float')
+            if dev:
+                cv2.imwrite('var/fishing_session_' + str(int(time.time())) + '_success.png', img_rgb)
+            return (loc[1][0] + w / 2) / 2, (loc[0][0] + h / 2) / 2
+
+
+def move_mouse(place):
+    x, y = place[0], place[1]
+    print("Moving cursor to " + str(place))
+    # autopy.mouse.smooth_move(int(screen_start_point[0]) + x , int(screen_start_point[1]) + y)
+    # win32api.SetCursorPos([x, y])
+    pyautogui.moveTo(x + 650, y + 200, 0.3)
+
 
 if __name__ == "__main__":
     is_stop = True
@@ -103,7 +138,10 @@ if __name__ == "__main__":
     
                     frame = cv2.cvtColor(img_np, cv2.COLOR_BGR2RGB)
                     frame_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    
+
+                    cv2.imwrite(os.path.join('abc1.jpg'), frame)
+                    cv2.imwrite(os.path.join('abc2.jpg'), frame_hsv)
+
                     h_min = np.array((0, 0, 253), np.uint8)
                     h_max = np.array((255, 0, 255), np.uint8)
     
@@ -126,13 +164,25 @@ if __name__ == "__main__":
                             is_block = False
                             if b_x < 1: b_x = lastx
                             if b_y < 1: b_y = lasty
-                            pyautogui.moveTo(b_x, b_y + fish_area[1], 0.3)
-                            pyautogui.keyDown('shiftleft')
+                            b_x, b_y + fish_area[1], 0.3
+
+                            print(b_x)
+                            print(b_y)
+                            print(fish_area[1])
+
+                            pyautogui.moveTo(b_x, b_y+fish_area[1], 0.3)
+
+                            #place = find_float('abc1.jpg')
+                            #print('Float found at ' + str(place))
+                            #move_mouse(place);
+
+                            #pyautogui.keyDown('shiftleft')
                             pyautogui.mouseDown(button='right')
                             pyautogui.mouseUp(button='right')
-                            pyautogui.keyUp('shiftleft')
+                            #pyautogui.keyUp('shiftleft')
                             print("Catch !")
-                            time.sleep(5)
+                            sleepi = random.randrange(2,5);
+                            time.sleep(sleepi);
                     lastx = b_x
                     lasty = b_y
                     
