@@ -131,22 +131,46 @@ if __name__ == "__main__":
                     is_block = True
                     time.sleep(2)
                 else:
+                    #left ;top; right;bottom;
+                    #分别表示该窗口的/左侧/顶部/右侧/底部坐标
                     fish_area = (0, rect[3] / 2, rect[2], rect[3])
     
                     img = ImageGrab.grab(fish_area)
                     img_np = np.array(img)
-    
+                    #cv2.COLOR_BGR2RGB = 正常的图像
+                    #cv2.COLOR_BGR2HSV = 染色 红色
+                    #cv2.cvtColor()用来实现类型转换，比如BGR==>HSV或者BGR==>GRAY等等，下面的物体跟踪就是基于HSV值来做的。
+
                     frame = cv2.cvtColor(img_np, cv2.COLOR_BGR2RGB)
                     frame_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
                     cv2.imwrite(os.path.join('abc1.jpg'), frame)
                     cv2.imwrite(os.path.join('abc2.jpg'), frame_hsv)
 
+                    #0,0,255 蓝色
+                    #255,0,255 深红色
                     h_min = np.array((0, 0, 253), np.uint8)
                     h_max = np.array((255, 0, 255), np.uint8)
-    
+                    #然后利用cv2.inRange函数设阈值，去除背景部分
+                    #第一个参数：hsv指的是原图
+                    #第二个参数：lower_red指的是图像中低于这个lower_red的值，图像值变为0
+                    #第三个参数：upper_red指的是图像中高于这个upper_red的值，图像值变为0
+                    #而在lower_red～upper_red之间的值变成255
                     mask = cv2.inRange(frame_hsv, h_min, h_max)
-    
+
+                    #图像矩将帮助我们计算一些特征，如物体的质心，物体的面积等
+                    #cv2.moments() 函数可以给出计算后所有矩值的字典dictionary
+                    #（1）空间矩
+                    #零阶矩：m00
+                    #一阶矩：m10, m01
+                    #二阶矩：m20, m11, m02
+                    #三阶矩：m30, m21, m12, m03
+                    #（2）中心矩
+                    #二阶中心矩：mu20, mu11, mu02
+                    #三阶中心矩：mu30, mu21,mu12, mu03
+                    #（3）归一化中心矩
+                    #二阶Hu矩：nu20, nu11, nu02
+                    #三阶Hu矩：nu30, nu21, nu12, nu03
                     moments = cv2.moments(mask, 1)
                     dM01 = moments['m01']
                     dM10 = moments['m10']
@@ -154,7 +178,7 @@ if __name__ == "__main__":
     
                     b_x = 0
                     b_y = 0
-    
+                    #判断屏幕发生变化是，把鼠标移动到变化的位置进行点击
                     if dArea > 0:
                         b_x = int(dM10 / dArea)
                         b_y = int(dM01 / dArea)
@@ -164,13 +188,12 @@ if __name__ == "__main__":
                             is_block = False
                             if b_x < 1: b_x = lastx
                             if b_y < 1: b_y = lasty
-                            b_x, b_y + fish_area[1], 0.3
 
                             print(b_x)
                             print(b_y)
                             print(fish_area[1])
-
-                            pyautogui.moveTo(b_x, b_y+fish_area[1], 0.3)
+                            # 控制鼠标移动,duration为持续时间
+                            pyautogui.moveTo(b_x, b_y+fish_area[1], duration=0.3)
 
                             #place = find_float('abc1.jpg')
                             #print('Float found at ' + str(place))
