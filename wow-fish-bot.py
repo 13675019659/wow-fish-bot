@@ -76,8 +76,24 @@ def move_mouse(place):
     # win32api.SetCursorPos([x, y])
     pyautogui.moveTo(x + 650, y + 200, 0.3)
 
+#加鱼饵 限制10分30秒加一次鱼饵
+def add_bait(starttime):
+    baitTime = 60*10+30;
+    endtime = time.time();
+    print(endtime-starttime);
+    if(endtime-starttime>baitTime):
+        #按2键开始上鱼饵
+        print("Simulate key 2 = = = = start bait!")
+        pyautogui.press('2')
+        #休眠5秒 返回当前时间
+        time.sleep(5)
+        return time.time();
+    else:
+        #返回原来的时间
+        return starttime;
 
 if __name__ == "__main__":
+    starttime = time.time();
     is_stop = True
     flag_exit = False
     lastx = 0
@@ -204,6 +220,8 @@ if __name__ == "__main__":
                             pyautogui.mouseUp(button='right')
                             #pyautogui.keyUp('shiftleft')
                             print("Catch !")
+                            #按2键上鱼饵 2键绑定上鱼饵红
+                            starttime = add_bait(starttime);
                             sleepi = random.randrange(2,5);
                             time.sleep(sleepi);
                     lastx = b_x
@@ -216,8 +234,9 @@ if __name__ == "__main__":
                     if time.time() - new_cast_time > recast_time:
                         print("New cast if something wrong")
                         is_block = False               
-            if cv2.waitKey(1) == 27:
-                break
+            #if cv2.waitKey(1) & 0xFF == 27:
+            #    print("break")
+            #    break
         else:
             print("Pause")
             systray.update(hover_text=app + " - On Pause")   
