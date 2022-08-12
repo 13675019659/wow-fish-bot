@@ -86,7 +86,7 @@ def add_bait(starttime):
         print("Simulate key 2 = = = = start bait!")
         pyautogui.press('2')
         #休眠5秒 返回当前时间
-        time.sleep(5)
+        time.sleep(10)
         return time.time();
     else:
         #返回原来的时间
@@ -117,8 +117,6 @@ if __name__ == "__main__":
                        duration=5)    
     while flag_exit is False:
         if is_stop == False:
-            print("==="+GetWindowText(GetForegroundWindow()))
-            print("==="+GetWindowText(GetForegroundWindow()) != "魔兽世界")
             if GetWindowText(GetForegroundWindow()) != "魔兽世界":
                 if wait_mes == 5:
                     wait_mes = 0
@@ -127,19 +125,20 @@ if __name__ == "__main__":
                                        + " as active window",
                                        icon_path='wow-fish-bot.ico',
                                        duration=5)                  
-                print("Waiting for World of Warcraft as active window")
+                print("等待魔兽世界作为活动窗口".encode('utf-8').decode('utf-8'))
                 systray.update(
                     hover_text=app
                     + " - Waiting for World of Warcraft as active window")
                 wait_mes += 1
                 time.sleep(2)
             else:
-                print("Has entered worldofwarcraft to start monitoring")
+                #已进入worldofwarcraft以开始监控
+                print("已进入worldofwarcraft以开始监控".encode('utf-8').decode('utf-8'))
                 systray.update(hover_text=app)
                 rect = GetWindowRect(GetForegroundWindow())
                 
                 if is_block == False:
-                    print("Simulate key 1 = = = = start fishing!")
+                    print("模拟键1==开始钓鱼！".encode('utf-8').decode('utf-8'))
                     lastx = 0
                     lasty = 0
                     pyautogui.press('1')
@@ -200,7 +199,7 @@ if __name__ == "__main__":
                         b_y = int(dM01 / dArea)
                     if lastx > 0 and lasty > 0:
                         if lastx != b_x and lasty != b_y:
-                            print("Floating power starts to finish!")
+                            print("监测到浮漂有动静".encode('utf-8').decode('utf-8'))
                             is_block = False
                             if b_x < 1: b_x = lastx
                             if b_y < 1: b_y = lasty
@@ -228,8 +227,8 @@ if __name__ == "__main__":
                     lasty = b_y
                     
                     # show windows with mask
-                    cv2.imshow("fish_mask", mask)
-                    cv2.imshow("fish_frame", frame)
+                    #cv2.imshow("fish_mask", mask)
+                    #cv2.imshow("fish_frame", frame)
     
                     if time.time() - new_cast_time > recast_time:
                         print("New cast if something wrong")
@@ -238,6 +237,6 @@ if __name__ == "__main__":
             #    print("break")
             #    break
         else:
-            print("Pause")
+            print("当前是暂停状态".encode('utf-8').decode('utf-8'))
             systray.update(hover_text=app + " - On Pause")   
             time.sleep(2)
