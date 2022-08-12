@@ -83,7 +83,7 @@ def add_bait(starttime):
     print(endtime-starttime);
     if(endtime-starttime>baitTime):
         #按2键开始上鱼饵
-        print("Simulate key 2 = = = = start bait!")
+        print("模拟键1==上鱼饵!".encode('utf-8').decode('utf-8'))
         pyautogui.press('2')
         #休眠5秒 返回当前时间
         time.sleep(10)
@@ -218,7 +218,7 @@ if __name__ == "__main__":
                             pyautogui.mouseDown(button='right')
                             pyautogui.mouseUp(button='right')
                             #pyautogui.keyUp('shiftleft')
-                            print("Catch !")
+                            #print("Catch !")
                             #按2键上鱼饵 2键绑定上鱼饵红
                             starttime = add_bait(starttime);
                             sleepi = random.randrange(2,5);
