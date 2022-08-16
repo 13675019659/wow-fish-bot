@@ -3,7 +3,6 @@ import io
 import sys
 
 from logging import config,getLogger
-
 from log import logsettings
 
 if __name__ == "__main__":
