@@ -58,7 +58,7 @@ LOGGING_DIC = {
             # 可以定制日志文件路径
             # BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # log文件的目录
             # LOG_PATH = os.path.join(BASE_DIR,'a1.log')
-            'filename': 'a1.log',  # 日志文件
+            'filename': 'fish1.log',  # 日志文件
             'maxBytes': 1024*1024*5,  # 日志大小 5M
             'backupCount': 5,
             'encoding': 'utf-8',  # 日志文件的编码，再也不用担心中文log乱码了
@@ -67,7 +67,7 @@ LOGGING_DIC = {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',  # 保存到文件
             'formatter': 'test',
-            'filename': 'a2.log',
+            'filename': 'fish2.log',
             'encoding': 'utf-8',
         },
     },
