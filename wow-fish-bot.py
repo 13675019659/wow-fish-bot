@@ -1,46 +1,47 @@
 # -*- coding: utf-8 -*-
-import webbrowser
-import sys
 import os
-import struct
+import random
+import sys
 import time
+import webbrowser
+
+import cv2
+import numpy as np
 #
 import pyautogui
-import numpy as np
-import cv2
-import random
+from PIL import ImageGrab
+from infi.systray import SysTrayIcon
 #
 from win10toast import ToastNotifier
-from PIL import ImageGrab
 from win32gui import GetWindowText, GetForegroundWindow, GetWindowRect
-from threading import Thread
-from infi.systray import SysTrayIcon
+
+#日志
+from logging import config,getLogger
+from log import logsettings
 
 dev = False
-
-
 def resource_path(relative_path):
     if hasattr(sys, "_MEIPASS"):
         base_path = sys._MEIPASS
     else:
         base_path = os.path.abspath(".")
     return os.path.join(base_path, relative_path)
-  
+
 def app_pause(systray):
     global is_stop
     is_stop = False if is_stop is True else True
     # print ("Is Pause: " + str(is_stop))
     if is_stop is True:
         systray.update(
-            hover_text=app + " - On Pause") 
+            hover_text=app + " - On Pause")
     else:
         systray.update(
-            hover_text=app)         
+            hover_text=app)
 
 def app_destroy(systray):
     # print("Exit app")
     sys.exit()
-    
+
 def app_about(systray):
     # print("github.com/YECHEZ/wow-fish-bot")
     webbrowser.open('https://github.com/YECHEZ/wow-fish-bot')
@@ -83,7 +84,7 @@ def add_bait(starttime):
     print(endtime-starttime);
     if(endtime-starttime>baitTime):
         #按2键开始上鱼饵
-        print("模拟键1==上鱼饵!".encode('utf-8').decode('utf-8'))
+        logger1("模拟键2==上鱼饵!")
         pyautogui.press('2')
         #休眠5秒 返回当前时间
         time.sleep(10)
@@ -93,6 +94,10 @@ def add_bait(starttime):
         return starttime;
 
 if __name__ == "__main__":
+    config.dictConfig(logsettings.LOGGING_DIC)#在logging模块中加在logsettings.py中定义的字典
+    logger1=getLogger('用户账户')#获取到定义的loggers来产生日志
+    logger1("当前是暂停状态")
+    exit();
     starttime = time.time();
     is_stop = True
     flag_exit = False
@@ -101,20 +106,20 @@ if __name__ == "__main__":
     is_block = False
     new_cast_time = 0
     recast_time = 40
-    wait_mes = 0    
+    wait_mes = 0
     app = "WoW Fish BOT by YECHEZ"
     link = "github.com/YECHEZ/wow-fish-bot"
     app_ico = resource_path('wow-fish-bot.ico')
     menu_options = (("Start/Stop", None, app_pause),
                     (link, None, app_about),)
-    systray = SysTrayIcon(app_ico, app, 
+    systray = SysTrayIcon(app_ico, app,
                           menu_options, on_quit=app_destroy)
     systray.start()
     toaster = ToastNotifier()
     toaster.show_toast(app,
                        link,
                        icon_path=app_ico,
-                       duration=5)    
+                       duration=5)
     while flag_exit is False:
         if is_stop == False:
             if GetWindowText(GetForegroundWindow()) != "魔兽世界":
@@ -124,8 +129,8 @@ if __name__ == "__main__":
                                        "Waiting for World of Warcraft"
                                        + " as active window",
                                        icon_path='wow-fish-bot.ico',
-                                       duration=5)                  
-                print("等待魔兽世界作为活动窗口".encode('utf-8').decode('utf-8'))
+                                       duration=5)
+                logger1("等待魔兽世界作为活动窗口")
                 systray.update(
                     hover_text=app
                     + " - Waiting for World of Warcraft as active window")
@@ -133,12 +138,12 @@ if __name__ == "__main__":
                 time.sleep(2)
             else:
                 #已进入worldofwarcraft以开始监控
-                print("已进入worldofwarcraft以开始监控".encode('utf-8').decode('utf-8'))
+                logger1("已进入worldofwarcraft以开始监控")
                 systray.update(hover_text=app)
                 rect = GetWindowRect(GetForegroundWindow())
-                
+
                 if is_block == False:
-                    print("模拟键1==开始钓鱼！".encode('utf-8').decode('utf-8'))
+                    logger1("模拟键1==开始钓鱼！")
                     lastx = 0
                     lasty = 0
                     pyautogui.press('1')
@@ -149,7 +154,7 @@ if __name__ == "__main__":
                     #left ;top; right;bottom;
                     #分别表示该窗口的/左侧/顶部/右侧/底部坐标
                     fish_area = (0, rect[3] / 2, rect[2], rect[3])
-    
+
                     img = ImageGrab.grab(fish_area)
                     img_np = np.array(img)
                     #cv2.COLOR_BGR2RGB = 正常的图像
@@ -190,7 +195,7 @@ if __name__ == "__main__":
                     dM01 = moments['m01']
                     dM10 = moments['m10']
                     dArea = moments['m00']
-    
+
                     b_x = 0
                     b_y = 0
                     #判断屏幕发生变化是，把鼠标移动到变化的位置进行点击
@@ -199,14 +204,11 @@ if __name__ == "__main__":
                         b_y = int(dM01 / dArea)
                     if lastx > 0 and lasty > 0:
                         if lastx != b_x and lasty != b_y:
-                            print("监测到浮漂有动静".encode('utf-8').decode('utf-8'))
+                            logger1("监测到浮漂有动静")
                             is_block = False
                             if b_x < 1: b_x = lastx
                             if b_y < 1: b_y = lasty
 
-                            print(b_x)
-                            print(b_y)
-                            print(fish_area[1])
                             # 控制鼠标移动,duration为持续时间
                             pyautogui.moveTo(b_x, b_y+fish_area[1], duration=0.3)
 
@@ -218,25 +220,25 @@ if __name__ == "__main__":
                             pyautogui.mouseDown(button='right')
                             pyautogui.mouseUp(button='right')
                             #pyautogui.keyUp('shiftleft')
-                            #print("Catch !")
+                            logger1("Catch !")
                             #按2键上鱼饵 2键绑定上鱼饵红
                             starttime = add_bait(starttime);
                             sleepi = random.randrange(2,5);
                             time.sleep(sleepi);
                     lastx = b_x
                     lasty = b_y
-                    
+
                     # show windows with mask
                     #cv2.imshow("fish_mask", mask)
                     #cv2.imshow("fish_frame", frame)
-    
+
                     if time.time() - new_cast_time > recast_time:
-                        print("New cast if something wrong")
-                        is_block = False               
+                        logger1("40秒过去了鱼还没上钩,重新抛竿")
+                        is_block = False
             #if cv2.waitKey(1) & 0xFF == 27:
             #    print("break")
             #    break
         else:
-            print("当前是暂停状态".encode('utf-8').decode('utf-8'))
-            systray.update(hover_text=app + " - On Pause")   
+            logger1("当前是暂停状态")
+            systray.update(hover_text=app + " - On Pause")
             time.sleep(2)
