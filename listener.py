@@ -23,7 +23,7 @@ def on_press(key):
 
 
 global hwnd;
-hwnd= Empty;
+hwnd= Empty
 
 # 释放按钮，按esc按键会退出监听
 def on_release(key):
